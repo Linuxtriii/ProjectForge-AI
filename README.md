@@ -1,24 +1,67 @@
 # ProjectForge AI
 
-ProjectForge AI turns a student's skills, career goals, and target role into technically serious software project ideas that are strong enough to build and discuss in interviews.
+> A local-first AI project generator that turns a student's skills, career goals, target role, and preferred technologies into technically strong software project ideas.
 
-It is local-first: the API checks Ollama first, automatically selects an installed preferred model, and falls back to a deterministic project generator when local AI is unavailable. No OpenAI API is used and no API key is required for the core app.
+ProjectForge AI helps students move from **"What should I build?"** to a concrete, interview-ready project plan.
 
-## Features
+The application uses a local Ollama model when available and automatically falls back to a deterministic generation engine when local AI is unavailable. No OpenAI API key is required.
 
-- Profile form for education, skills, experience, goals, target roles, and preferred technologies
-- Ollama model discovery through the backend
-- Automatic preference order: `qwen3:8b`, `llama3.1:8b`, `mistral:7b`, then another installed model
-- Structured JSON generation with validation and safe JSON extraction
-- Deterministic fallback engine that remains useful without Ollama
-- Project cards with resume value, technical depth, uniqueness, and role-fit scores
-- Detailed project briefs with architecture, stack, features, AI usage, resume bullets, and interview questions
-- Client-side search, category filtering, and sorting
-- Saved project bench stored in localStorage
-- Clipboard actions for project ideas, resume bullets, and tech stacks
-- Regenerate-a-variation flow for making a project more advanced, more beginner-friendly, or more placement-focused
-- Responsive layout for desktop, tablet, and mobile
+## ✨ Features
 
+- 🎯 Student profile input for education, skills, experience, goals, target roles, and technologies
+- 🤖 Local AI generation using Ollama
+- 🔎 Automatic detection of installed Ollama models
+- 🧠 Preferred model selection:
+  - `qwen3:8b`
+  - `llama3.1:8b`
+  - `mistral:7b`
+  - Any other installed model as fallback
+- 🛡️ Structured JSON generation with validation and safe JSON extraction
+- 🔄 Deterministic fallback generation when Ollama is unavailable
+- 📊 Project scoring based on:
+  - Resume value
+  - Technical depth
+  - Uniqueness
+  - Role fit
+- 📋 Detailed project briefs containing:
+  - Architecture
+  - Technology stack
+  - Features
+  - AI usage
+  - Resume bullet points
+  - Interview questions
+- 🔍 Client-side search, filtering, and sorting
+- 💾 Saved project bench using browser `localStorage`
+- 📋 One-click clipboard actions for project ideas, resume bullets, and tech stacks
+- 🔁 Project variation generation
+- 📱 Responsive interface for desktop, tablet, and mobile
+
+## 🏗️ Architecture
+
+```text
+┌──────────────────────────────┐
+│      React + TypeScript      │
+│     TanStack Query + Vite    │
+└──────────────┬───────────────┘
+               │
+               │ HTTP
+               ▼
+┌──────────────────────────────┐
+│       Express 5 API          │
+│        /api/* routes         │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│       AI Generation          │
+│                              │
+│  Ollama → Local LLM          │
+│          │                   │
+│          └── unavailable ──┐ │
+│                            ▼ │
+│                  Deterministic│
+│                  Fallback     │
+└──────────────────────────────┘
 ## Tech stack
 
 - Frontend: React, TypeScript, Vite, Tailwind CSS, TanStack Query, Wouter
