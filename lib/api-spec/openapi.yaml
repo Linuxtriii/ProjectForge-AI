@@ -1,0 +1,318 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: ai
+    description: Local AI provider operations
+  - name: generation
+    description: Project idea generation operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /ai/status:
+    get:
+      operationId: getAiStatus
+      tags: [ai]
+      summary: Get local AI status
+      responses:
+        "200":
+          description: Current AI provider status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiStatus"
+  /ai/models:
+    get:
+      operationId: getAiModels
+      tags: [ai]
+      summary: List locally available Ollama models
+      responses:
+        "200":
+          description: Available models
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiModels"
+  /generate:
+    post:
+      operationId: generateProjects
+      tags: [generation]
+      summary: Generate tailored project ideas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateInput"
+      responses:
+        "200":
+          description: Generated project ideas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /fallback/generate:
+    post:
+      operationId: generateFallbackProjects
+      tags: [generation]
+      summary: Generate project ideas with the local fallback engine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateInput"
+      responses:
+        "200":
+          description: Generated fallback project ideas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    Profile:
+      type: object
+      properties:
+        degree:
+          type: string
+        branch:
+          type: string
+        year:
+          type: string
+        university:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        targetRole:
+          type: string
+        targetCompany:
+          type: string
+        careerGoal:
+          type: string
+        experienceLevel:
+          type: string
+        existingProjects:
+          type: string
+        internshipExperience:
+          type: string
+        learningAreas:
+          type: string
+      required: [skills, targetRole, careerGoal, experienceLevel]
+    Preferences:
+      type: object
+      properties:
+        category:
+          type: string
+        difficulty:
+          type: string
+        count:
+          type: integer
+          minimum: 1
+          maximum: 8
+        preferredTechnologies:
+          type: array
+          items:
+            type: string
+      required: [category, difficulty, count]
+    GenerateInput:
+      type: object
+      properties:
+        profile:
+          $ref: "#/components/schemas/Profile"
+        preferences:
+          $ref: "#/components/schemas/Preferences"
+        model:
+          type: ["string", "null"]
+        variationProject:
+          type: ["object", "null"]
+          additionalProperties: true
+        variationRequest:
+          type: ["string", "null"]
+      required: [profile, preferences]
+    TechStack:
+      type: object
+      properties:
+        frontend:
+          type: array
+          items: { type: string }
+        backend:
+          type: array
+          items: { type: string }
+        database:
+          type: array
+          items: { type: string }
+        ai:
+          type: array
+          items: { type: string }
+        other:
+          type: array
+          items: { type: string }
+      required: [frontend, backend, database, ai, other]
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        oneLinePitch:
+          type: string
+        problem:
+          type: string
+        solution:
+          type: string
+        targetUsers:
+          type: array
+          items: { type: string }
+        category:
+          type: string
+        difficulty:
+          type: string
+        resumeValue:
+          type: integer
+        technicalDepth:
+          type: integer
+        uniqueness:
+          type: integer
+        placementRelevance:
+          type: integer
+        techStack:
+          $ref: "#/components/schemas/TechStack"
+        coreFeatures:
+          type: array
+          items: { type: string }
+        advancedFeatures:
+          type: array
+          items: { type: string }
+        architecture:
+          type: string
+        aiUsage:
+          type: string
+        apis:
+          type: array
+          items: { type: string }
+        databaseDesign:
+          type: array
+          items: { type: string }
+        learningOutcomes:
+          type: array
+          items: { type: string }
+        resumeBulletPoints:
+          type: array
+          items: { type: string }
+        interviewQuestions:
+          type: array
+          items: { type: string }
+        estimatedBuildTime:
+          type: string
+        monetizationPotential:
+          type: string
+      required:
+        - id
+        - title
+        - oneLinePitch
+        - problem
+        - solution
+        - targetUsers
+        - category
+        - difficulty
+        - resumeValue
+        - technicalDepth
+        - uniqueness
+        - placementRelevance
+        - techStack
+        - coreFeatures
+        - advancedFeatures
+        - architecture
+        - aiUsage
+        - apis
+        - databaseDesign
+        - learningOutcomes
+        - resumeBulletPoints
+        - interviewQuestions
+        - estimatedBuildTime
+        - monetizationPotential
+    GenerateResponse:
+      type: object
+      properties:
+        source:
+          type: string
+          enum: [ollama, fallback]
+        model:
+          type: ["string", "null"]
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        message:
+          type: ["string", "null"]
+      required: [source, model, projects]
+    AiStatus:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [ollama, fallback]
+        available:
+          type: boolean
+        model:
+          type: ["string", "null"]
+        installed:
+          type: boolean
+        message:
+          type: string
+      required: [provider, available, model, installed, message]
+    AiModels:
+      type: object
+      properties:
+        models:
+          type: array
+          items:
+            type: string
+        selected:
+          type: ["string", "null"]
+        available:
+          type: boolean
+      required: [models, selected, available]
+

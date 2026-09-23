@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ProjectForge AI"
+description = "A resume-focused project idea generator for students and early-career developers, powered by local Ollama inference with a deterministic fallback engine."
+version = "1.0.0"
+id = "artifacts/projectforge-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21914
+
+[services.development]
+run = "pnpm --filter @workspace/projectforge-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/projectforge-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/projectforge-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21914"
+BASE_PATH = "/"
